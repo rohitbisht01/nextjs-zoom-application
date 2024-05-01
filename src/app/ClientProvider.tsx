@@ -6,7 +6,6 @@ import {
   StreamVideoClient,
   User,
 } from "@stream-io/video-react-sdk";
-import { useSearch } from "@stream-io/video-react-sdk/dist/src/components/Search/hooks";
 import { Loader2 } from "lucide-react";
 import { nanoid } from "nanoid";
 import React, { useEffect, useState } from "react";
