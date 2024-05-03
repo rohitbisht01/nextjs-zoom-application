@@ -9,6 +9,7 @@ import {
 import { Loader2 } from "lucide-react";
 import { nanoid } from "nanoid";
 import React, { useEffect, useState } from "react";
+import { getToken } from "./action";
 
 interface ClientProviderProps {
   children: React.ReactNode;
@@ -56,12 +57,27 @@ function useInitializeVideoClient() {
       };
     }
 
+    // apiKey can be undefined even though we have specified in the .env.local file
+    const apiKey = process.env.NEXT_PUBLIC_STREAM_VIDEO_API_KEY;
+
+    if (!apiKey) {
+      throw new Error("Stream API key is not set");
+    }
+
     const client = new StreamVideoClient({
-      apiKey: process.env.NEXT_PUBLIC_STREAM_VIDEO_API_KEY,
+      apiKey,
       user: streamUser,
-      tokenProvider,
+      tokenProvider: user?.id ? getToken : undefined,
     });
-  }, []);
+
+    setVideoClient(client);
+
+    // clean up the client
+    return () => {
+      client.disconnectUser();
+      setVideoClient(null);
+    };
+  }, [userLoaded, user?.id, user?.username, user?.imageUrl]);
 
   return videoClient;
 }
